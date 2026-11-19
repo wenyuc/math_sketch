@@ -1,0 +1,134 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>几何画板</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+  </head>
+  <body>
+    <header class="topbar">
+      <a class="brand" href="/" aria-label="几何画板首页">
+        <span class="brand-mark" aria-hidden="true">
+          <svg viewBox="0 0 32 32"><path d="M5 25 15.8 5 27 25z"/><circle cx="16" cy="18" r="3"/></svg>
+        </span>
+        <span>几何画板</span>
+      </a>
+      <span class="topbar-note">让几何表达更简单</span>
+    </header>
+
+    <main>
+      <section class="intro" aria-labelledby="page-title">
+        <div>
+          <p class="eyebrow">MATH SKETCH · 几何工具</p>
+          <h1 id="page-title">把想法，画出来。</h1>
+          <p class="intro-copy">选择常用图形，在画布上自由摆放、移动与缩放。</p>
+        </div>
+        <div class="intro-decoration" aria-hidden="true">
+          <span class="deco-circle"></span><span class="deco-line"></span>
+          <span class="deco-triangle"></span>
+        </div>
+      </section>
+
+      <section class="workspace" aria-label="几何绘图工作区">
+        <aside class="shapes-panel">
+          <div class="panel-heading">
+            <div>
+              <p class="section-kicker">图形库</p>
+              <h2>常用图形</h2>
+            </div>
+            <span class="shape-count">26 种</span>
+          </div>
+          <p class="panel-hint">点击添加；线段工具点两次；角落坐标按钮可同时添加坐标系</p>
+
+          <div class="shape-grid" id="shape-grid">
+            <button class="shape-button" data-shape="point"><span class="shape-icon"><svg viewBox="0 0 48 48"><circle cx="24" cy="24" r="4" class="solid-dot"/></svg></span><span>点</span></button>
+            <button class="shape-button" data-shape="segment" aria-pressed="false"><span class="shape-icon"><svg viewBox="0 0 48 48"><path d="M10 24h28"/><circle cx="10" cy="24" r="2"/><circle cx="38" cy="24" r="2"/></svg></span><span>线段</span></button>
+            <button class="shape-button" data-shape="dashSegment" aria-pressed="false"><span class="shape-icon"><svg viewBox="0 0 48 48"><path d="M10 24h28" stroke-dasharray="4 3"/><circle cx="10" cy="24" r="2"/><circle cx="38" cy="24" r="2"/></svg></span><span>虚线段</span></button>
+            <button class="shape-button" data-shape="numberline"><span class="shape-icon"><svg viewBox="0 0 48 48"><path d="M5 25h38m-5-5 5 5-5 5M8 21v8m8-6v4m8-6v8m8-6v4m8-8v8"/></svg></span><span>数轴</span></button>
+            <button class="shape-button" data-shape="scalene"><span class="shape-icon"><svg viewBox="0 0 48 48"><path d="m8 39 15-31 18 31z"/></svg></span><span>斜三角形</span></button>
+            <button class="shape-button" data-shape="isosceles"><span class="shape-icon"><svg viewBox="0 0 48 48"><path d="m7 39 17-31 17 31z"/></svg></span><span>等腰三角形</span></button>
+            <button class="shape-button" data-shape="equilateral"><span class="shape-icon"><svg viewBox="0 0 48 48"><path d="m7 38 17-30 17 30z"/></svg></span><span>等边三角形</span></button>
+            <button class="shape-button" data-shape="rightTriangle"><span class="shape-icon"><svg viewBox="0 0 48 48"><path d="M9 39V9l30 30zM9 33h6v6"/></svg></span><span>直角三角形</span></button>
+            <button class="shape-button" data-shape="rightIsosceles"><span class="shape-icon"><svg viewBox="0 0 48 48"><path d="M9 39V9l30 30zM9 33h6v6"/></svg></span><span>等腰直角三角形</span></button>
+            <button class="shape-button" data-shape="obtuseTriangle"><span class="shape-icon"><svg viewBox="0 0 48 48"><path d="M3 32 45 32 24 18z"/></svg></span><span>钝角三角形</span></button>
+            <button class="shape-button" data-shape="rectangle"><span class="shape-icon"><svg viewBox="0 0 48 48"><rect x="7" y="12" width="34" height="24" rx="1"/></svg></span><span>矩形</span></button>
+            <button class="shape-button" data-shape="tallRectangle"><span class="shape-icon"><svg viewBox="0 0 48 48"><rect x="12" y="5" width="24" height="38" rx="1"/></svg></span><span>高矩形</span></button>
+            <button class="shape-button" data-shape="square"><span class="shape-icon"><svg viewBox="0 0 48 48"><rect x="10" y="8" width="28" height="28" rx="1"/></svg></span><span>正方形</span></button>
+            <button class="shape-button" data-shape="rightTrapezoid"><span class="shape-icon"><svg viewBox="0 0 48 48"><path d="M10 10h22l8 28H10z"/></svg></span><span>直角梯形</span></button>
+            <button class="shape-button" data-shape="isoscelesTrapezoid"><span class="shape-icon"><svg viewBox="0 0 48 48"><path d="m15 10 18 0 10 28H5z"/></svg></span><span>等腰梯形</span></button>
+            <button class="shape-button" data-shape="quadrilateral"><span class="shape-icon"><svg viewBox="0 0 48 48"><path d="m8 14 25-6 9 27-27 6z"/></svg></span><span>一般凸四边形</span></button>
+            <button class="shape-button" data-shape="circle" data-coordinate-option><span class="shape-icon"><svg viewBox="0 0 48 48"><circle cx="24" cy="24" r="15"/></svg></span><span>圆</span></button>
+            <button class="shape-button" data-shape="ellipse" data-coordinate-option><span class="shape-icon"><svg viewBox="0 0 48 48"><ellipse cx="24" cy="24" rx="19" ry="12"/></svg></span><span>椭圆（焦点在x轴）</span></button>
+            <button class="shape-button" data-shape="ellipseVertical" data-coordinate-option><span class="shape-icon"><svg viewBox="0 0 48 48"><ellipse cx="24" cy="24" rx="12" ry="19"/></svg></span><span>椭圆（焦点在y轴）</span></button>
+            <button class="shape-button" data-shape="hyperbolaHorizontal" data-coordinate-option><span class="shape-icon"><svg viewBox="0 0 48 48"><path d="M8 8c8 2 11 8 11 16s-3 14-11 16m32-32c-8 2-11 8-11 16s3 14 11 16"/></svg></span><span>双曲线（焦点在x轴）</span></button>
+            <button class="shape-button" data-shape="hyperbolaVertical" data-coordinate-option><span class="shape-icon"><svg viewBox="0 0 48 48"><path d="M24 14c-6 0-11-6-16-8m16 8c6 0 11-6 16-8M24 34c-6 0-11 6-16 8m16-8c6 0 11 6 16 8"/></svg></span><span>双曲线（焦点在y轴）</span></button>
+            <button class="shape-button" data-shape="parabolaUp" data-coordinate-option><span class="shape-icon"><svg viewBox="0 0 48 48"><path d="M7 40Q24-12 41 40"/></svg></span><span>向上抛物线</span></button>
+            <button class="shape-button" data-shape="parabolaDown" data-coordinate-option><span class="shape-icon"><svg viewBox="0 0 48 48"><path d="M7 8Q24 60 41 8"/></svg></span><span>向下抛物线</span></button>
+            <button class="shape-button" data-shape="parabolaLeft" data-coordinate-option><span class="shape-icon"><svg viewBox="0 0 48 48"><path d="M40 7Q-12 24 40 41"/></svg></span><span>向左抛物线</span></button>
+            <button class="shape-button" data-shape="parabolaRight" data-coordinate-option><span class="shape-icon"><svg viewBox="0 0 48 48"><path d="M8 7Q60 24 8 41"/></svg></span><span>向右抛物线</span></button>
+            <button class="shape-button" data-shape="coordinates"><span class="shape-icon"><svg viewBox="0 0 48 48"><path d="M7 39h35M12 43V7m-5 5 5-5 5 5m20 27-5-5m5 5-5 5"/></svg></span><span>直角坐标系</span></button>
+          </div>
+        </aside>
+
+        <section class="drawing-panel" aria-label="画图区">
+          <div class="drawing-toolbar">
+            <div class="canvas-title">
+              <span class="canvas-status" aria-hidden="true"></span>
+              <div><h2>画图区</h2><p id="selection-status">选择一个图形开始创作</p></div>
+            </div>
+            <div class="toolbar-actions">
+              <div class="line-control">
+                <label for="line-width">线条粗细</label>
+                <input id="line-width" type="range" min="1" max="8" step="1" value="3">
+                <output id="line-width-value" for="line-width">3</output>
+              </div>
+              <span class="toolbar-divider" aria-hidden="true"></span>
+              <button class="tool-button" id="scale-down" title="缩小所选图形" aria-label="缩小所选图形">−</button>
+              <button class="tool-button" id="scale-up" title="放大所选图形" aria-label="放大所选图形">+</button>
+              <button class="tool-button delete-button" id="delete-shape" title="删除所选图形" aria-label="删除所选图形">
+                <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M4 6h12m-10 0 .7 10h6.6L14 6m-6-2h4m-3 5v4m2-4v4"/></svg>
+              </button>
+              <button class="clear-button" id="clear-canvas">清空画布</button>
+            </div>
+          </div>
+          <div class="curve-controls" id="curve-controls" hidden>
+            <label id="curve-opening-label" for="curve-opening">开口宽窄</label>
+            <input id="curve-opening" type="range" min="20" max="160" step="1" value="100">
+            <output id="curve-opening-value" for="curve-opening">100</output>
+            <label id="curve-length-label" for="curve-length">曲线延伸长度</label>
+            <input id="curve-length" type="range" min="50" max="160" step="1" value="100">
+            <output id="curve-length-value" for="curve-length">100</output>
+          </div>
+          <div class="canvas-wrap">
+            <svg id="drawing-canvas" viewBox="0 0 1200 680" role="application" aria-label="几何图形画布。拖动图形以移动，滚动鼠标滚轮以缩放，选择线段或虚线段后点击两点绘制。">
+              <defs>
+                <pattern id="grid" width="28" height="28" patternUnits="userSpaceOnUse">
+                  <circle cx="1" cy="1" r="1" fill="#dfe7ef"/>
+                </pattern>
+              </defs>
+              <rect class="canvas-background" width="1200" height="680" fill="url(#grid)"/>
+              <g id="preview-layer"></g>
+              <g id="geometry-layer"></g>
+            </svg>
+            <div class="empty-state" id="empty-state">
+              <span class="empty-icon" aria-hidden="true">
+                <svg viewBox="0 0 64 64"><path d="m12 49 18-34 22 34z"/><circle cx="30" cy="34" r="4"/><path d="M8 55h48"/></svg>
+              </span>
+              <strong>画布还是空的</strong>
+              <span>从左侧选择一个图形，开始你的创作</span>
+            </div>
+          </div>
+          <footer class="canvas-footer">
+            <span><kbd>拖动</kbd> 移动图形</span>
+            <span><kbd>滚轮</kbd> 缩放所选图形</span>
+            <span><kbd>Esc</kbd> 取消当前操作</span>
+            <span class="canvas-count" id="canvas-count">0 个图形</span>
+          </footer>
+        </section>
+      </section>
+      <p class="page-note">所有图形均可自由调整位置与大小</p>
+    </main>
+    <script src="{{ url_for('static', filename='app.js') }}" defer></script>
+  </body>
+</html>
