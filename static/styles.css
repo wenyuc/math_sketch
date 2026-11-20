@@ -99,16 +99,22 @@ h1 { margin: 0; font-size: clamp(26px, 3vw, 34px); letter-spacing: -1.2px; font-
 .geometry .shape-no-fill { fill: none; }
 .geometry .dashed-line { stroke-dasharray: 9 7; }
 .geometry text { stroke: none; fill: #62758d; font: 16px "DM Sans", "Noto Sans SC", sans-serif; user-select: none; }
-.geometry.is-selected > * { stroke: #4778e8; }
-.geometry.is-selected .shape-fill { fill: rgba(71, 120, 232, .12); }
-.geometry.is-selected text { fill: #4778e8; }
+.geometry.is-selected:not(.has-part-selection) > * { stroke: #4778e8; }
+.geometry.is-selected:not(.has-part-selection) .shape-fill { fill: rgba(71, 120, 232, .12); }
+.geometry.is-selected:not(.has-part-selection) text { fill: #4778e8; }
 .geometry .solid-dot { fill: #34445a; }
-.geometry.is-selected .solid-dot { fill: #4778e8; }
+.geometry.is-selected:not(.has-part-selection) .solid-dot { fill: #4778e8; }
 .geometry .axis { stroke: #536782; }
-.geometry.is-selected .axis { stroke: #4778e8; }
+.geometry.is-selected:not(.has-part-selection) .axis { stroke: #4778e8; }
 .geometry .axis-label { font-size: 12px; }
 .geometry .mark { stroke: #536782; }
-.geometry.is-selected .mark { stroke: #4778e8; }
+.geometry.is-selected:not(.has-part-selection) .mark { stroke: #4778e8; }
+.geometry-part.is-part-selected > *:not(.axis-hit):not(text) { stroke: #4778e8; }
+.geometry-part.is-part-selected .shape-fill { fill: rgba(71, 120, 232, .12); }
+.geometry-part.is-part-selected text { fill: #4778e8; }
+.geometry-part.is-part-selected .solid-dot { fill: #4778e8; }
+.geometry-part.is-part-selected .axis { stroke: #4778e8; }
+.geometry-part.is-part-selected .mark { stroke: #4778e8; }
 .geometry .axis-draggable { cursor: move; }
 .geometry [data-axis="x"] { cursor: ns-resize; }
 .geometry [data-axis="y"] { cursor: ew-resize; }
