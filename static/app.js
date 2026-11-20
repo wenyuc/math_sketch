@@ -109,13 +109,14 @@ const shapes = {
   },
   coordinates: {
     name: "直角坐标系",
-    markup: '<g class="axis-draggable" data-axis="x"><path class="axis-hit" d="M-120 0H125"/><path class="axis shape-no-fill" d="M-120 0H125m-10-8 10 8-10 8"/><path class="mark shape-no-fill" d="M-100-5v10m20-5v-5m20 5v-5m20 5v-5m20 5v-5m20 5v-5m20 5v-5m20 5v-5m20 5v-5"/><text x="128" y="5">x</text></g><g class="axis-draggable" data-axis="y"><path class="axis-hit" d="M0 95V-100"/><path class="axis shape-no-fill" d="M0 95V-100m-8 10 8-10 8 10"/><path class="mark shape-no-fill" d="M-5 80h10m-5-20h5m-5-20h5m-5-20h5m-5-20h5m-5-20h5m-5-20h5"/><text x="5" y="-105">y</text></g><circle class="solid-dot axis-origin" cx="0" cy="0" r="4"/>',
+    markup: '<g class="axis-draggable geometry-part" data-axis="x"><path class="axis-hit" d="M-120 0H125"/><path class="axis shape-no-fill" d="M-120 0H125m-10-8 10 8-10 8"/><path class="mark shape-no-fill" d="M-100-5v10m20-5v-5m20 5v-5m20 5v-5m20 5v-5m20 5v-5m20 5v-5m20 5v-5m20 5v-5"/><text x="128" y="5">x</text></g><g class="axis-draggable geometry-part" data-axis="y"><path class="axis-hit" d="M0 95V-100"/><path class="axis shape-no-fill" d="M0 95V-100m-8 10 8-10 8 10"/><path class="mark shape-no-fill" d="M-5 80h10m-5-20h5m-5-20h5m-5-20h5m-5-20h5m-5-20h5m-5-20h5"/><text x="5" y="-105">y</text></g><circle class="solid-dot axis-origin" cx="0" cy="0" r="4"/>',
   },
 };
 
-const coordinateAxesMarkup = '<g class="shape-axes"><path class="axis shape-no-fill" d="M-145 0H145m-8-6 8 6-8 6M0 125V-125m-6 8 6-8 6 8"/><path class="mark shape-no-fill" d="M-120-5v10m40-10v10m40-10v10m80-10v10m40-10v10m-85-85h10m-10 40h10m-10 80h10m-10 40h10m-10 40h10"/><text class="axis-label" x="150" y="4">x</text><text class="axis-label" x="5" y="-130">y</text></g>';
+const coordinateAxesMarkup = '<g class="geometry-part axis-draggable" data-axis="x" data-offset="0"><path class="axis-hit" d="M-145 0H145"/><path class="axis shape-no-fill" d="M-145 0H145m-8-6 8 6-8 6"/><path class="mark shape-no-fill" d="M-120-5v10m40-10v10m40-10v10m80-10v10m40-10v10"/><text class="axis-label" x="150" y="4">x</text></g><g class="geometry-part axis-draggable" data-axis="y" data-offset="0"><path class="axis-hit" d="M0 125V-125"/><path class="axis shape-no-fill" d="M0 125V-125m-6 8 6-8 6 8"/><path class="mark shape-no-fill" d="M-5-85h10m-10 40h10m-10 80h10m-10 40h10m-10 40h10"/><text class="axis-label" x="5" y="-130">y</text></g>';
 
 let selected = null;
+let selectedPart = null;
 let nextId = 1;
 let addOffset = 0;
 let dragging = null;
@@ -136,15 +137,15 @@ function isHyperbola(type) {
 function curveMarkup(type, opening, length) {
   if (isParabola(type)) {
     if (type === "parabolaUp") {
-      return `<path class="shape-no-fill" d="M${-opening} ${length}Q0 ${-3 * length} ${opening} ${length}"/>`;
+      return `<path class="shape-no-fill" d="M${-opening} ${length}Q0 ${-length} ${opening} ${length}"/>`;
     }
     if (type === "parabolaDown") {
-      return `<path class="shape-no-fill" d="M${-opening} ${-length}Q0 ${3 * length} ${opening} ${-length}"/>`;
+      return `<path class="shape-no-fill" d="M${-opening} ${-length}Q0 ${length} ${opening} ${-length}"/>`;
     }
     if (type === "parabolaLeft") {
-      return `<path class="shape-no-fill" d="M${length} ${-opening}Q${-3 * length} 0 ${length} ${opening}"/>`;
+      return `<path class="shape-no-fill" d="M${length} ${-opening}Q${-length} 0 ${length} ${opening}"/>`;
     }
-    return `<path class="shape-no-fill" d="M${-length} ${-opening}Q${3 * length} 0 ${-length} ${opening}"/>`;
+    return `<path class="shape-no-fill" d="M${-length} ${-opening}Q${length} 0 ${-length} ${opening}"/>`;
   }
 
   const focusDistance = 90;
@@ -191,9 +192,18 @@ function updateStatus() {
       ? `${toolName}：已确定第一个点，请点击第二个点`
       : `${toolName}：请在画布点击第一个点`;
   } else if (selected) {
-    const hint = selected.dataset.type === "coordinates"
-      ? "拖动图形移动，拖动坐标轴调整位置"
-      : "拖动移动，滚轮缩放";
+    const partName = selectedPart?.dataset.axis === "x"
+      ? "x 轴"
+      : selectedPart?.dataset.axis === "y"
+        ? "y 轴"
+        : selectedPart?.dataset.part === "graph"
+          ? selected.dataset.name
+          : null;
+    const hint = partName
+      ? `${partName}已选中，拖动移动`
+      : selected.dataset.type === "coordinates"
+        ? "拖动图形移动，拖动坐标轴调整位置"
+        : "拖动移动，滚轮缩放";
     selectionStatus.textContent = `已选中：${selected.dataset.name} · ${hint}`;
   } else {
     selectionStatus.textContent = items.length > 0
@@ -202,19 +212,31 @@ function updateStatus() {
   }
 }
 
-function selectShape(element) {
-  if (selected) selected.classList.remove("is-selected");
+function selectShape(element, part = null) {
+  if (selected) {
+    selected.classList.remove("is-selected", "has-part-selection");
+  }
+  if (selectedPart) selectedPart.classList.remove("is-part-selected");
   selected = element;
+  selectedPart = part;
   if (selected) selected.classList.add("is-selected");
+  if (selected) selected.classList.toggle("has-part-selection", Boolean(selectedPart));
+  if (selectedPart) selectedPart.classList.add("is-part-selected");
   updateCurveControls();
   updateStatus();
+}
+
+function geometryMarkup(markup, withAxes) {
+  return withAxes
+    ? `<g class="geometry-part graph-part" data-part="graph" data-x="0" data-y="0">${markup}</g>${coordinateAxesMarkup}`
+    : markup;
 }
 
 function createGeometry(type, name, markup, x, y, withAxes = false) {
   const opening = isHyperbola(type) ? 45 : 100;
   const length = 100;
   if (isParabola(type) || isHyperbola(type)) markup = curveMarkup(type, opening, length);
-  if (withAxes) markup = `${coordinateAxesMarkup}${markup}`;
+  markup = geometryMarkup(markup, withAxes);
   const group = document.createElementNS("http://www.w3.org/2000/svg", "g");
   group.setAttribute("class", "geometry");
   group.dataset.id = String(nextId++);
@@ -267,18 +289,39 @@ function pointInShape(element, point) {
   };
 }
 
-function setAxisPosition(element, axis, value) {
-  const offset = Math.max(-85, Math.min(85, value));
-  if (axis === "x") {
-    element.dataset.axisY = String(offset);
-    element.querySelector('[data-axis="x"]').setAttribute("transform", `translate(0 ${offset})`);
-  } else {
-    element.dataset.axisX = String(offset);
-    element.querySelector('[data-axis="y"]').setAttribute("transform", `translate(${offset} 0)`);
+function axisPosition(element, axis, axisElement) {
+  if (element.dataset.type === "coordinates") {
+    return Number(axis === "x" ? element.dataset.axisY || 0 : element.dataset.axisX || 0);
   }
-  const x = Number(element.dataset.axisX || 0);
-  const y = Number(element.dataset.axisY || 0);
-  element.querySelector(".axis-origin").setAttribute("transform", `translate(${x} ${y})`);
+  return Number(axisElement.dataset.offset || 0);
+}
+
+function setAxisPosition(element, axis, value, axisElement = element.querySelector(`[data-axis="${axis}"]`)) {
+  const offset = Math.max(-85, Math.min(85, value));
+  axisElement.dataset.offset = String(offset);
+  if (element.dataset.type === "coordinates") {
+    if (axis === "x") {
+      element.dataset.axisY = String(offset);
+    } else {
+      element.dataset.axisX = String(offset);
+    }
+  }
+  if (axis === "x") {
+    axisElement.setAttribute("transform", `translate(0 ${offset})`);
+  } else {
+    axisElement.setAttribute("transform", `translate(${offset} 0)`);
+  }
+  if (element.dataset.type === "coordinates") {
+    const x = Number(element.dataset.axisX || 0);
+    const y = Number(element.dataset.axisY || 0);
+    element.querySelector(".axis-origin").setAttribute("transform", `translate(${x} ${y})`);
+  }
+}
+
+function setPartPosition(part, x, y) {
+  part.dataset.x = String(x);
+  part.dataset.y = String(y);
+  part.setAttribute("transform", `translate(${x} ${y})`);
 }
 
 function makeSegmentMarkup(type, first, second) {
@@ -402,21 +445,30 @@ canvas.addEventListener("pointerdown", (event) => {
   }
 
   const axisTarget = event.target.closest(".axis-draggable");
+  const partTarget = event.target.closest(".geometry-part");
   const target = event.target.closest(".geometry");
   if (!target) {
     selectShape(null);
     return;
   }
-  selectShape(target);
-  if (axisTarget && target.dataset.type === "coordinates") {
+  selectShape(target, partTarget || axisTarget);
+  if (axisTarget) {
     const axis = axisTarget.dataset.axis;
     const localPoint = pointInShape(target, point);
-    const currentOffset = Number(axis === "x" ? target.dataset.axisY || 0 : target.dataset.axisX || 0);
     dragging = {
       element: target,
+      axisElement: axisTarget,
       axis,
       startPointer: axis === "x" ? localPoint.y : localPoint.x,
-      startOffset: currentOffset,
+      startOffset: axisPosition(target, axis, axisTarget),
+    };
+  } else if (partTarget?.dataset.part === "graph") {
+    const localPoint = pointInShape(target, point);
+    dragging = {
+      element: target,
+      part: partTarget,
+      dx: localPoint.x - Number(partTarget.dataset.x || 0),
+      dy: localPoint.y - Number(partTarget.dataset.y || 0),
     };
   } else {
     dragging = {
@@ -441,7 +493,13 @@ canvas.addEventListener("pointermove", (event) => {
       dragging.element,
       dragging.axis,
       dragging.startOffset + currentPointer - dragging.startPointer,
+      dragging.axisElement,
     );
+    return;
+  }
+  if (dragging.part) {
+    const localPoint = pointInShape(dragging.element, point);
+    setPartPosition(dragging.part, localPoint.x - dragging.dx, localPoint.y - dragging.dy);
     return;
   }
   dragging.element.dataset.x = String(point.x - dragging.dx);
@@ -484,7 +542,11 @@ function updateSelectedCurve() {
     Number(selected.dataset.opening),
     Number(selected.dataset.length),
   );
-  selected.innerHTML = `${selected.dataset.withAxes === "true" ? coordinateAxesMarkup : ""}${markup}`;
+  if (selected.dataset.withAxes === "true") {
+    selected.querySelector(".graph-part").innerHTML = markup;
+  } else {
+    selected.innerHTML = markup;
+  }
 }
 
 curveOpeningInput.addEventListener("input", updateSelectedCurve);
